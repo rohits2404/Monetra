@@ -6,6 +6,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { QueryProvider } from "@/providers/query-provider";
 import { SheetProvider } from "@/providers/sheet-provider";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -26,7 +27,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
                     <QueryProvider>
                         <SheetProvider />
                         <Toaster />
-                        {children}
+                        <TooltipProvider>{children}</TooltipProvider>
                     </QueryProvider>
                 </ClerkProvider>
             </body>
