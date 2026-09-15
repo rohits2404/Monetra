@@ -4,6 +4,8 @@ import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ClerkProvider } from "@clerk/nextjs";
 import { QueryProvider } from "@/providers/query-provider";
+import { SheetProvider } from "@/providers/sheet-provider";
+import { Toaster } from "@/components/ui/sonner";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-sans" });
 
@@ -21,7 +23,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         >
             <body className="min-h-full flex flex-col">
                 <ClerkProvider>
-                    <QueryProvider>{children}</QueryProvider>
+                    <QueryProvider>
+                        <SheetProvider />
+                        <Toaster />
+                        {children}
+                    </QueryProvider>
                 </ClerkProvider>
             </body>
         </html>
