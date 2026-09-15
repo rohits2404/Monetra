@@ -8,6 +8,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { DataTableFeatures } from "@/components/data-table";
 import { InferResponseType } from "hono";
 import { client } from "@/lib/hono";
+import { Actions } from "./actions";
 
 export type ResponseType = InferResponseType<
     typeof client.api.accounts.$get,
@@ -58,6 +59,11 @@ export const columns: ColumnDef<DataTableFeatures, ResponseType, unknown>[] = [
         cell: ({ row }) => (
             <div className="font-medium">{row.getValue("name")}</div>
         ),
+    },
+
+    {
+        id: "actions",
+        cell: ({ row }) => <Actions id={row.original.id} />,
     },
 
     {
