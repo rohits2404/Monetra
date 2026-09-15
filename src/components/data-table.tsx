@@ -18,6 +18,7 @@ import {
     createSortedRowModel,
     createFilteredRowModel,
     createPaginatedRowModel,
+    filterFn_includesString,
 } from "@tanstack/react-table";
 
 import {
@@ -31,15 +32,21 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { row_getVisibleCells } from "@tanstack/react-table/static-functions";
+import { useConfirm } from "@/hooks/use-confirm";
 
 const features = tableFeatures({
     rowSortingFeature,
     columnFilteringFeature,
     rowPaginationFeature,
     rowSelectionFeature,
+
     filteredRowModel: createFilteredRowModel(),
     sortedRowModel: createSortedRowModel(),
     paginatedRowModel: createPaginatedRowModel(),
+
+    filterFns: {
+        includesString: filterFn_includesString,
+    },
 });
 
 export type DataTableFeatures = typeof features;
@@ -59,6 +66,11 @@ export function DataTable<TData extends RowData>({
     onDelete,
     disabled,
 }: DataTableProps<TData>) {
+    const [ConfirmDialog, confirm] = useConfirm(
+        "Are You Sure?",
+        "You Are About To Perform a Bulk Delete.",
+    );
+
     const [sorting, setSorting] = React.useState<SortingState>([]);
     const [columnFilters, setColumnFilters] =
         React.useState<ColumnFiltersState>([]);
@@ -78,8 +90,12 @@ export function DataTable<TData extends RowData>({
         },
     });
 
+    console.log("Filter state:", columnFilters);
+    console.log("Rows:", table.getRowModel().rows);
+
     return (
         <div>
+            <ConfirmDialog />
             <div className="flex items-center py-4">
                 <Input
                     placeholder={`Filter ${filterKey}...`}
@@ -101,9 +117,15 @@ export function DataTable<TData extends RowData>({
                         size="sm"
                         variant="outline"
                         className="ml-auto font-normal text-xs"
-                        onClick={() =>
-                            onDelete(table.getFilteredSelectedRowModel().rows)
-                        }
+                        onClick={async () => {
+                            const ok = await confirm();
+                            if (ok) {
+                                onDelete(
+                                    table.getFilteredSelectedRowModel().rows,
+                                );
+                                table.resetRowSelection();
+                            }
+                        }}
                     >
                         <Trash className="size-4 mr-2" />
                         Delete (
