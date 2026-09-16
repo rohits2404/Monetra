@@ -4,11 +4,14 @@ import { useState } from "react";
 import { useCreateLinkToken } from "../api/use-create-link-token";
 import { useMount } from "react-use";
 import { Button } from "@/components/ui/button";
+import { useExchangePublicToken } from "../api/use-exchange-public-token";
+import { usePlaidLink } from "react-plaid-link";
 
 export const PlaidConnect = () => {
     const [token, setToken] = useState<string | null>(null);
 
     const createLinkToken = useCreateLinkToken();
+    const exchangePublicToken = useExchangePublicToken();
 
     useMount(() => {
         createLinkToken.mutate(undefined, {
@@ -18,8 +21,33 @@ export const PlaidConnect = () => {
         });
     });
 
+    const plaid = usePlaidLink({
+        token: token ?? "",
+        onSuccess: (publicToken) => {
+            if (!publicToken) return;
+
+            exchangePublicToken.mutate({
+                publicToken,
+            });
+        },
+        env: "sandbox",
+    });
+
+    const onClick = () => {
+        if (!token || !plaid.ready) return;
+
+        plaid.open();
+    };
+
+    const isDisabled = !token || !plaid.ready || exchangePublicToken.isPending;
+
     return (
-        <Button disabled={!token} size="sm" variant="ghost">
+        <Button
+            onClick={onClick}
+            disabled={isDisabled}
+            size="sm"
+            variant="ghost"
+        >
             Connect
         </Button>
     );

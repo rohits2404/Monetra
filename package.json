@@ -38,6 +38,7 @@
         "react-hook-form": "^7.88.0",
         "react-icons": "^5.7.0",
         "react-papaparse": "^4.4.0",
+        "react-plaid-link": "^5.0.0",
         "react-select": "^5.10.2",
         "react-use": "^17.6.1",
         "recharts": "^3.10.1",
