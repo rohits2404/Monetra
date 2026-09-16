@@ -18,6 +18,7 @@ import { LineVariant } from "./line-variant";
 import { AreaVariant } from "./area-variant";
 import { BarVariant } from "./bar-variant";
 import { Skeleton } from "./ui/skeleton";
+import { usePaywall } from "@/features/subscriptions/hooks/use-paywall";
 
 type Props = {
     data?: {
@@ -30,8 +31,13 @@ type Props = {
 export const Chart = ({ data = [] }: Props) => {
     const [chartType, setChartType] = useState("area");
 
+    const { shouldBlock, triggerPaywall } = usePaywall();
+
     const onTypeChange = (type: string) => {
-        // TODO: Add paywall
+        if (type !== "area" && shouldBlock) {
+            triggerPaywall();
+            return;
+        }
 
         setChartType(type);
     };
