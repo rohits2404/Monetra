@@ -1,6 +1,6 @@
 import { db } from "@/drizzle/db";
 import { accounts, categories, transactions } from "@/drizzle/schema";
-import { calculcatePercentageChange, fillMissingDays } from "@/lib/utils";
+import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 import { clerkMiddleware, getAuth } from "@clerk/hono";
 import { zValidator } from "@hono/zod-validator";
 import { differenceInDays, parse, subDays } from "date-fns";
@@ -53,7 +53,10 @@ const app = new Hono().get(
                         sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
                             Number,
                         ),
-                    remaining: sum(transactions.amount).mapWith(Number),
+                    remaining:
+                        sql<number>`COALESCE(SUM(${transactions.amount}), 0)`.mapWith(
+                            Number,
+                        ),
                 })
                 .from(transactions)
                 .innerJoin(accounts, eq(transactions.accountId, accounts.id))
@@ -81,17 +84,17 @@ const app = new Hono().get(
             lastPeriodEnd,
         );
 
-        const incomeChange = calculcatePercentageChange(
+        const incomeChange = calculatePercentageChange(
             currentPeriod.income,
             lastPeriod.income,
         );
 
-        const expensesChange = calculcatePercentageChange(
+        const expensesChange = calculatePercentageChange(
             currentPeriod.expenses,
             lastPeriod.expenses,
         );
 
-        const remainingChange = calculcatePercentageChange(
+        const remainingChange = calculatePercentageChange(
             currentPeriod.remaining ?? 0,
             lastPeriod.remaining ?? 0,
         );
