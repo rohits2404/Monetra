@@ -19,6 +19,7 @@ import {
     createFilteredRowModel,
     createPaginatedRowModel,
     filterFn_includesString,
+    sortFn_text,
 } from "@tanstack/react-table";
 
 import {
@@ -46,6 +47,10 @@ const features = tableFeatures({
 
     filterFns: {
         includesString: filterFn_includesString,
+    },
+
+    sortFns: {
+        text: sortFn_text,
     },
 });
 
