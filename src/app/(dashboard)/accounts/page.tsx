@@ -1,8 +1,12 @@
 import { Accounts } from "@/features/accounts";
-import React from "react";
+import React, { Suspense } from "react";
 
 const AccountsPage = () => {
-    return <Accounts />;
+    return (
+        <Suspense fallback={null}>
+            <Accounts />
+        </Suspense>
+    );
 };
 
 export default AccountsPage;

@@ -1,8 +1,12 @@
 import { Transactions } from "@/features/transactions";
-import React from "react";
+import { Suspense } from "react";
 
 const TransactionPage = () => {
-    return <Transactions />;
+    return (
+        <Suspense fallback={null}>
+            <Transactions />
+        </Suspense>
+    );
 };
 
 export default TransactionPage;
